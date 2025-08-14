@@ -5,6 +5,51 @@
 const express = require("express");
 const app = express(); 
 const port = 5000;
+const mongoose = require("mongoose");
+const JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
+const passport = require("passport");  
+const User = require("./models/User");  
+require("dotenv").config();
+
+// console.log(process.env);
+
+
+//connect mongodb to our node app.
+//mongoose.connect() takes 2 arguments : 1. which db to connect to (db url) 
+mongoose.connect("mongodb+srv://gulshan26:" + 
+    process.env.MONGO_PASSWORD +
+    "@spotifyclone.znkado0.mongodb.net/?retryWrites=true&w=majority&appName=SpotifyClone",
+     {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+     }
+    )
+    .then((x) => {
+        console.log("Connected to Mongo!");
+    })
+    .catch((err) => {
+        console.log("Error while connecting to Mongo");
+    });
+
+//setup passport-jwt
+
+let opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = 'thisKeyIsSupposedToSecret';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    User.findOne({id: jwt_payload.sub}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+            // or you could create a new account
+        }
+    });
+}));
 
 //API : GET type : / : return text "Hello world"
 app.get("/", (req, res) => {
