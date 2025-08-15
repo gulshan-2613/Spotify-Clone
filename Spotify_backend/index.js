@@ -9,8 +9,12 @@ const mongoose = require("mongoose");
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 const passport = require("passport");  
-const User = require("./models/User");  
+// const User = require("./model/user");
+const User = require("./model/user");  
+const authRoutes = require("./routes/auth");
 require("dotenv").config();
+
+app.use(express.json());
 
 // console.log(process.env);
 
@@ -57,6 +61,8 @@ app.get("/", (req, res) => {
     // res contain all data for the response
     res.send("Hello World");
 });
+
+app.use("/auth", authRoutes);
 
 // now we wamt to tell express that our server will run on localhost:5000
 app.listen(port, () => {

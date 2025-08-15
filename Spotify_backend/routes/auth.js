@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const User = require("../model/user");
 const bcrypt = require("bcrypt");
 const {getToken} = require("../utlis/helpers");
 
@@ -40,3 +40,5 @@ router.post("/register", async(req, res) => {
     delete userToReturn.password;
     return res.status(200).json(userToReturn);
 });
+
+module.exports = router;

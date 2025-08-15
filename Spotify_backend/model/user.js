@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 // Step 2 :create a mongoose schema(structure of a user)
 // Step 3 :create a model
 
-const User = new mongosse.Schema({
+const User = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
