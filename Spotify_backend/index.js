@@ -33,6 +33,7 @@ mongoose.connect("mongodb+srv://gulshan26:" +
         console.log("Connected to Mongo!");
     })
     .catch((err) => {
+        console.log(err);
         console.log("Error while connecting to Mongo");
     });
 

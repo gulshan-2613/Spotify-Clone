@@ -33,12 +33,25 @@ router.post("/register", async(req, res) => {
     const newUser = await User.create(newUserData);
 
     //Step 4: We want to create the token to return to the user
-    const token = await getToken(email, newuser);
+    const token = await getToken(email, newUser);
 
     //Step 5: return the result to the user
     const userToReturn = {...newUser.toJSON(), token};
     delete userToReturn.password;
     return res.status(200).json(userToReturn);
+});
+
+router.post("/login", async (req, res) => {
+      // Step 1: get email and password sent by user from req.body.
+      const {email, password} = req.body; 
+      // Step 2: check if a user with given email exists. if not, the credentials are
+      const user = await User.findOne9({email: email});
+      if (!user) {
+        return res.status(403).json({err: "Invalid credentials"});
+      }
+
+      // Step 3: if the user exists, check if the password is correct. if not, the credentials 
+      // Step 4: if the credentials are correct, return a token to the user.
 });
 
 module.exports = router;
