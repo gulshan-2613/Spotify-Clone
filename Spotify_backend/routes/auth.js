@@ -51,7 +51,17 @@ router.post("/login", async (req, res) => {
       }
 
       // Step 3: if the user exists, check if the password is correct. if not, the credentials 
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if(!isPasswordValid) {
+        return res.status(403).json({err: "Invalid credentials"});
+      }
+
       // Step 4: if the credentials are correct, return a token to the user.
+      const token = await getToken(user.email, user);
+      const userToReturn = {...newUser.toJSON(), token};
+      delete userToReturn.password;
+      return res.status(200).json(userToReturn);
+
 });
 
 module.exports = router;
