@@ -11,6 +11,7 @@ const JwtStrategy = require('passport-jwt').Strategy,
 const passport = require("passport");  
 // const User = require("./model/user");
 const User = require("./model/user");  
+const songRoutes = require("./routes/song");
 const authRoutes = require("./routes/auth");
 require("dotenv").config();
 
@@ -42,18 +43,19 @@ mongoose.connect("mongodb+srv://gulshan26:" +
 let opts = {}
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = 'thisKeyIsSupposedToSecret';
-passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    User.findOne({id: jwt_payload.sub}, function(err, user) {
-        if (err) {
-            return done(err, false);
-        }
+passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
+    try {
+        // usually JWT payload stores user _id, not "id"
+        const user = await User.findById(jwt_payload.id);
+
         if (user) {
             return done(null, user);
         } else {
             return done(null, false);
-            // or you could create a new account
         }
-    });
+    } catch (err) {
+        return done(err, false);
+    }
 }));
 
 //API : GET type : / : return text "Hello world"
@@ -64,6 +66,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/song", songRoutes);
 
 // now we wamt to tell express that our server will run on localhost:5000
 app.listen(port, () => {

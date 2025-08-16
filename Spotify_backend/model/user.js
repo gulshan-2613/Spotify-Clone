@@ -5,9 +5,12 @@ const mongoose = require("mongoose");
 // Step 3 :create a model
 
 const User = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true,
+     firstName:{
+        type:String,
+        required:true
+    },
+    password:{
+        type:String
     },
     lastName: {
         type: String,

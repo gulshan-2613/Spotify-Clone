@@ -2,66 +2,75 @@ const express = require("express");
 const router = express.Router();
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
-const {getToken} = require("../utlis/helpers");
+const { getToken } = require("../utlis/helpers");
 
-//This post route will help to register a user
-router.post("/register", async(req, res) => {
+// ---------------- REGISTER ----------------
+router.post("/register", async (req, res) => {
+  try {
+    const { email, password, firstName, lastName, username } = req.body;
 
-    // This code is run when the /register api is called as a POST request
-
-    // My req.body will be of the format {email, password, firstname, lastnmae, username}
-    const {email, password, firstName, lastName, username} = req.body;
-
-    //Sep 2: Does a user with this email already exist? If yes, we throw an error.
-    const user = await User.findOne({email: email});
-    if(user) {
-        // status code by default is 200
-        return res
-             .status(403)
-             .json({error: "A user with this email already exists"});
+    // Step 1: check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(403).json({ error: "A user with this email already exists" });
     }
-    // This is valid request
 
-    //Step 3: Create a new user in the DB
-    //Step 3.1: We not store password in plain text.
-    //xyz: We convert the plain text password to a hash.
-    const hashedPassword = bcrypt.hash(password, 10);
-    const newUserData = {email, password: hashedPassword,
-         firstName,
-         lastName,
-         username};
+    // Step 2: hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Step 3: create new user
+    const newUserData = {
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      username,
+    };
     const newUser = await User.create(newUserData);
 
-    //Step 4: We want to create the token to return to the user
-    const token = await getToken(email, newUser);
+    // Step 4: generate token
+    const token = getToken(email, newUser);
 
-    //Step 5: return the result to the user
-    const userToReturn = {...newUser.toJSON(), token};
+    // Step 5: return user without password
+    const userToReturn = { ...newUser.toJSON(), token };
     delete userToReturn.password;
+
     return res.status(200).json(userToReturn);
+  } catch (err) {
+    console.error("Register error:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
 });
 
+// ---------------- LOGIN ----------------
 router.post("/login", async (req, res) => {
-      // Step 1: get email and password sent by user from req.body.
-      const {email, password} = req.body; 
-      // Step 2: check if a user with given email exists. if not, the credentials are
-      const user = await User.findOne9({email: email});
-      if (!user) {
-        return res.status(403).json({err: "Invalid credentials"});
-      }
+  try {
+    const { email, password } = req.body;
 
-      // Step 3: if the user exists, check if the password is correct. if not, the credentials 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if(!isPasswordValid) {
-        return res.status(403).json({err: "Invalid credentials"});
-      }
+    // Step 1: check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(403).json({ err: "Invalid credentials" });
+    }
 
-      // Step 4: if the credentials are correct, return a token to the user.
-      const token = await getToken(user.email, user);
-      const userToReturn = {...newUser.toJSON(), token};
-      delete userToReturn.password;
-      return res.status(200).json(userToReturn);
+    // Step 2: validate password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(403).json({ err: "Invalid credentials" });
+    }
 
+    // Step 3: generate token
+    const token = getToken(user.email, user);
+
+    // Step 4: return user without password
+    const userToReturn = { ...user.toJSON(), token };
+    delete userToReturn.password;
+
+    return res.status(200).json(userToReturn);
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
 });
 
 module.exports = router;

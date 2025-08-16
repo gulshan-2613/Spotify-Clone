@@ -1,12 +1,13 @@
 const jwt = require("jsonwebtoken");
 
-exports = {}
+function getToken(email, user) {
+  // Payload should use "id" not "identifier"
+  const token = jwt.sign(
+    { id: user._id, email },    // 👈 use id instead of identifier
+    "thisKeyIsSupposedToSecret", // must match passport secret
+    { expiresIn: "1d" }          // optional: token expiry
+  );
+  return token;
+}
 
-exports.getToken = async(email,user) => {
-    //Assume this code is complete
-    // console.log(user);
-    const token = jwt.sign({identifier: user._id}, "thisKeyIsSupposedToSecret");
-    return token;
-};
-
-module.exports = exports
+module.exports = { getToken };
