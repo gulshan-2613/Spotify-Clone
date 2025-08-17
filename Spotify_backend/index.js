@@ -12,6 +12,7 @@ const passport = require("passport");
 // const User = require("./model/user");
 const User = require("./model/user");  
 const songRoutes = require("./routes/song");
+const playlistRoutes = require("./routes/playlist");
 const authRoutes = require("./routes/auth");
 require("dotenv").config();
 
@@ -67,6 +68,7 @@ app.get("/", (req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/song", songRoutes);
+app.use("/playlist", playlistRoutes);
 
 // now we wamt to tell express that our server will run on localhost:5000
 app.listen(port, () => {
