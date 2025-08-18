@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 // Step 2 :create a mongoose schema(structure of a user)
 // Step 3 :create a model
 
-const Playlist = new mongosse.Schema({
+const Playlist = new mongoose.Schema({
     name: {
         type: String,
         required: true,

@@ -1,43 +1,17 @@
 const mongoose = require("mongoose");
-// How to create a model
-// Step 1 :require mongoose
-// Step 2 :create a mongoose schema(structure of a user)
-// Step 3 :create a model
 
-const User = new mongoose.Schema({
-     firstName:{
-        type:String,
-        required:true
-    },
-    password:{
-        type:String
-    },
-    lastName: {
-        type: String,
-        required: false,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    username: {
-        type: String,
-        required: true,
-    },
-    likedSongs: {
-        type:String,
-        default: "",
-    },
-    likedPlaylists: {
-        type: String,
-        default: "",
-    },
-    subscribedArtists: {
-        type: String,
-        default: "",
-    },
+const UserSchema = new mongoose.Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String },
+  email: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  likedSongs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
+  likedPlaylists: [{ type: mongoose.Schema.Types.ObjectId, ref: "Playlist" }],
+  subscribedArtists: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
-const Usermodel = mongoose.model("User",User);
+// ✅ Use existing model if already compiled
+const UserModel = mongoose.models.User || mongoose.model("User", UserSchema);
 
-module.exports = Usermodel;
+module.exports = UserModel;

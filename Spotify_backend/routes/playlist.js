@@ -1,8 +1,9 @@
 const express = require("express");
 const passport = require("passport");
 const Playlist = require("../model/Playlist");
-const User = require("../model/User");
-const Song = reqiure("../model/Song");
+const User = require("../model/user");
+// const Song = reqiure("..");
+const Song = require("../model/Song");
 
 
 const router = express.Router();
@@ -59,7 +60,7 @@ router.get(
 
 router.post(
 "/add/song",
-passport.authenticate.apply("jwt", {session: false}),
+passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     const currentUser = req.user;
     const {playlistId, songId} = req.body;

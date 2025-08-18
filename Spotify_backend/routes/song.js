@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const Song = require("../model/Song");
-const User = reqiure("../model/user");
+// const User = reqiure("../model/user");
+const User = require("../model/user");
 
 router.post("/create", passport.authenticate("jwt", {session: false}),
  async (req, res) => {
@@ -30,10 +31,10 @@ router.get("/get/mysong", passport.authenticate("jwt", {session: false}),
     return res.status(200).json({data: songs});
  });
 
-router.get("/get/artist",
+router.get("/get/artist/:artistId",
     passport.authenticate("jwt", {session: false}),
     async (req, res) => {
-        const {artistId} = req.body;
+        const {artistId} = req.params;
         const artist = await User.find({_id: artistId});
         if(!artist) {
             return res.status(301).json({err: "Artist does not exist"});
@@ -44,10 +45,10 @@ router.get("/get/artist",
 );
 
 router.get(
-    "/get/songname",
+    "/get/songname/:songName",
     passport.authenticate("jwt", {session: false}),
     async (req, res) => {
-          const {songName} = req.body;
+          const {songName} = req.params;
         const songs = await Song.findOne({name:songName});
         return res.status(200).json({data: songs});
     }
