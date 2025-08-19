@@ -13,6 +13,7 @@ const passport = require("passport");
 const User = require("./model/user");  
 const songRoutes = require("./routes/song");
 const playlistRoutes = require("./routes/playlist");
+const cors = require("cors")
 const authRoutes = require("./routes/auth");
 require("dotenv").config();
 
@@ -66,6 +67,7 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 });
 
+app.use(cors());
 app.use("/auth", authRoutes);
 app.use("/song", songRoutes);
 app.use("/playlist", playlistRoutes);
